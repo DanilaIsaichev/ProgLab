@@ -1,40 +1,38 @@
-def gen_bin_tree(height, root):
+def gen_bin_tree(height, root, left_leaf_funct, right_leaf_funct):
     tree = {str(root): []}
     if height == 0:
         return tree
-    left_leaf = root * 4
-    right_leaf = root + 1
+    left_leaf = left_leaf_funct(root)
+    right_leaf = right_leaf_funct(root)
     height -= 1
-    tree.get(str(root)).append(gen_bin_tree(height, left_leaf))
-    tree.get(str(root)).append(gen_bin_tree(height, right_leaf))
+    tree.get(str(root)).append(gen_bin_tree(height, left_leaf, left_leaf_funct, right_leaf_funct))
+    tree.get(str(root)).append(gen_bin_tree(height, right_leaf, left_leaf_funct, right_leaf_funct))
     return tree
 
 
-def gen_bin_tree_not_recursive(height, root):
+def gen_bin_tree_not_recursive(height, root, left_leaf_funct, right_leaf_funct):
     tree = {str(root): []}
-    if height == 1:
+    if height == 0:
         return tree
-    else:
-        leafs = [[root]]
-        left_leaf = root
-        right_leaf = root
-        leafs.append([left_leaf * 4, right_leaf + 1])
-        left_leaf *= 4
-        right_leaf = right_leaf + 1
-        for i in range(1, height+1):
-            leafs.append([left_leaf * 4, left_leaf + 1])
-            leafs.append([right_leaf * 4, right_leaf + 1])
-            left_leaf *= 4
-            right_leaf += 1
+
+    tree = [[0] * 2 ** (i - 1) for i in range(1, height + 2)]
+    tree[0][0] = root
+
+    for i in range(1, height + 1):
+        for j in range(0, len(tree[i]), 2):
+            k = j // 2
+            tree[i][j] = left_leaf_funct(tree[i - 1][k])
+            tree[i][j + 1] = right_leaf_funct(tree[i - 1][k])
     return tree
 
 
 def main():
     h = int(input("height = "))
     r = int(input("root = "))
-    result = gen_bin_tree(height=h, root=r)
+    result = gen_bin_tree(h, r, lambda x: x * 4, lambda x: x + 1)
     print(result)
     return result
+
 
 if __name__ == '__main__':
     # h = 1
@@ -61,11 +59,26 @@ if __name__ == '__main__':
             }
         ]}
     ]}
-    print(gen_bin_tree_not_recursive(1, 4))
-    print(gen_bin_tree_not_recursive(2, 4))
-    print(gen_bin_tree_not_recursive(3, 4))
-    print(gen_bin_tree_not_recursive(4, 4))
-    print(gen_bin_tree(1, 4))
-    print(gen_bin_tree(2, 4))
-    print(gen_bin_tree(3, 4))
-    print(gen_bin_tree(4, 4))
+    print("Бинарное дерево с корнем 4 и глубиной 1 (не рекурсия)")
+    print(gen_bin_tree_not_recursive(1, 4, lambda x: x * 4, lambda x: x + 1))
+
+    print("Бинарное дерево с корнем 4 и глубиной 1 (рекурсия)")
+    print(gen_bin_tree(1, 4, lambda x: x * 4, lambda x: x + 1))
+
+    print("\nБинарное дерево с корнем 4 и глубиной 2 (не рекурсия)")
+    print(gen_bin_tree_not_recursive(2, 4, lambda x: x * 4, lambda x: x + 1))
+
+    print("Бинарное дерево с корнем 4 и глубиной 2 (рекурсия)")
+    print(gen_bin_tree(2, 4, lambda x: x * 4, lambda x: x + 1))
+
+    print("\nБинарное дерево с корнем 4 и глубиной 3 (не рекурсия)")
+    print(gen_bin_tree_not_recursive(3, 4, lambda x: x * 4, lambda x: x + 1))
+
+    print("Бинарное дерево с корнем 4 и глубиной 3 (рекурсия)")
+    print(gen_bin_tree(3, 4, lambda x: x * 4, lambda x: x + 1))
+
+    print("\nБинарное дерево с корнем 4 и глубиной 4 (не рекурсия)")
+    print(gen_bin_tree_not_recursive(4, 4, lambda x: x * 4, lambda x: x + 1))
+
+    print("Бинарное дерево с корнем 4 и глубиной 4 (рекурсия)")
+    print(gen_bin_tree(4, 4, lambda x: x * 4, lambda x: x + 1))
